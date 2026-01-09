@@ -1,23 +1,12 @@
 package br.com.giovanne.reps.data
 
 data class Training(
-    val name: String,
-    val color: Long,
-    val times: List<Long> = listOf(),
-    val exercises: List<Exercise> = listOf(),
-    val isCurrent: Boolean = false
-)
-
-// Todo: move to database
-val trainingsMock = listOf(
-    Training("A", 0xFF448AFF),
-    Training("B", 0xFFFF5252),
-    Training("C", 0xFF4CAF50),
-    Training("D", 0xFF03A9F4),
-    Training("E", 0xFFE91E63),
-    Training("F", 0xFF8BC34A),
-    Training("G", 0xFF607D8B),
-    Training("H", 0xFF3F51B5)
+    val name: String = "",
+    val color: Long = 0, // Default color
+    val times: List<Long> = emptyList(),
+    val exercises: List<Exercise> = emptyList(),
+    val current: Boolean = false,
+    val order: Int = 0
 )
 
 fun userTrainingsMock(): List<Training> {
@@ -127,12 +116,8 @@ fun userTrainingsMock(): List<Training> {
     )
 
     return listOf(
-        trainingsMock[0].copy(
-            times = listOf(630000L, 720000L, 810000L),
-            exercises = exercisesA,
-            isCurrent = true
-        ),
-        trainingsMock[1].copy(times = listOf(900000L, 1215000L), exercises = exercisesB),
-        trainingsMock[2].copy(exercises = exercisesC),
+        Training("A", 0xFF448AFF, listOf(630000L, 720000L, 810000L), exercisesA, true),
+        Training("B", 0xFFFF5252, listOf(900000L, 1215000L), exercisesB),
+        Training("C", 0xFF4CAF50, exercises = exercisesC),
     )
 }

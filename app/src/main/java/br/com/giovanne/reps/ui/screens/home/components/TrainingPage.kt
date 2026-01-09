@@ -1,10 +1,9 @@
-package br.com.giovanne.reps.ui.screens.trainings.components
+package br.com.giovanne.reps.ui.screens.home.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,7 +35,7 @@ fun TrainingPage(training: Training, modifier: Modifier = Modifier) {
             shape = shape
         )
 
-    if (training.isCurrent) {
+    if (training.current) {
         columnModifier = columnModifier.border(4.dp, MaterialTheme.colorScheme.secondary, shape)
     }
 

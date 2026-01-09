@@ -57,7 +57,7 @@ fun TrainingForm(training: Training?, onSave: (Training) -> Unit) {
                     color = 0xFF6200EE, // Default color for new trainings
                     times = emptyList(),
                     exercises = training?.exercises ?: emptyList(), // Preserve exercises on edit
-                    isCurrent = training?.isCurrent ?: false
+                    current = training?.current ?: false
                 )
                 onSave(newOrUpdatedTraining)
             },

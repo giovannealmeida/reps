@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.giovanne.reps.Date
-import br.com.giovanne.reps.TrainingViewPager
+import br.com.giovanne.reps.ui.screens.home.components.TrainingViewPager
 import com.example.compose.REPSTheme
 
 @Composable
