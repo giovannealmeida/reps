@@ -5,7 +5,8 @@ data class Exercise(
     val series: Int,
     val repetitions: Int,
     val load: Float,
-    val note: String
+    val note: String,
+    val categories: List<ExerciseCategory> = emptyList()
 ) {
     fun getFormattedReps(): String {
         return "$series x $repetitions"
