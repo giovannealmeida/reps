@@ -1,69 +1,75 @@
 package br.com.giovanne.reps.ui.screens.trainings.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import br.com.giovanne.reps.data.Training
+import br.com.giovanne.reps.data.repositories.getTrainings
+import br.com.giovanne.reps.ui.components.TrainingSquare
 
 @Composable
-fun TrainingFormDialog(
-    training: Training?,
+fun TrainingSelectDialog(
     onDismiss: () -> Unit,
-    onSave: (Training) -> Unit
+    onSelect: (Training) -> Unit
 ) {
+
+    var availableTrainings by remember { mutableStateOf<List<Training>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        availableTrainings = getTrainings()
+    }
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (training == null) "Novo Treino" else "Editar Treino") },
+        title = { Text("Selecione um treino") },
         text = {
-            TrainingForm(training = training, onSave = onSave)
+            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                items(availableTrainings) { training ->
+                    TrainingSquare(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable { onSelect(training) },
+                        name = training.name,
+                        color = training.color
+                    )
+                }
+            }
         },
-        confirmButton = {},
+        confirmButton = {
+        },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text("Cancelar")
             }
         }
     )
-}
-
-@Composable
-fun TrainingForm(training: Training?, onSave: (Training) -> Unit) {
-    var name by remember(training) { mutableStateOf(training?.name ?: "") }
-
-    Column {
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Nome do Treino") }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                val newOrUpdatedTraining = training?.copy(name = name) ?: Training(
-                    name = name,
-                    color = 0xFF6200EE, // Default color for new trainings
-                    times = emptyList(),
-                    exercises = training?.exercises ?: emptyList(), // Preserve exercises on edit
-                    current = training?.current ?: false
-                )
-                onSave(newOrUpdatedTraining)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Salvar")
-        }
-    }
 }

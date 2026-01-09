@@ -23,9 +23,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,24 +35,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.giovanne.reps.data.Training
-import br.com.giovanne.reps.data.userTrainingsMock
-import br.com.giovanne.reps.ui.screens.trainings.components.TrainingFormDialog
+import br.com.giovanne.reps.data.repositories.addTraining
+import br.com.giovanne.reps.data.repositories.getTrainings
+import br.com.giovanne.reps.data.repositories.getUserTrainings
 import com.example.compose.REPSTheme
+import kotlinx.coroutines.launch
 
 @Composable
-fun TrainingsScreen(modifier: Modifier = Modifier) {
+fun TrainingsScreen(modifier: Modifier = Modifier, onNewTraining: () -> Unit = {}) {
     var showTrainingForm by remember { mutableStateOf(false) }
     var selectedTraining by remember { mutableStateOf<Training?>(null) }
-    // Using mutableStateOf for the list to trigger recomposition on updates.
-    // A ViewModel-based solution would be more robust for state management.
-    val trainings = remember { mutableStateOf(userTrainingsMock()) }
+    var userTrainings by remember { mutableStateOf<List<Training>>(emptyList()) }
+    var predefinedTrainings by remember { mutableStateOf<List<Training>>(emptyList()) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        userTrainings = getUserTrainings()
+        predefinedTrainings = getTrainings()
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                selectedTraining = null
-                showTrainingForm = true
+                onNewTraining()
             }) {
                 Icon(Icons.Default.Add, contentDescription = "Adicionar Treino")
             }
@@ -62,7 +70,7 @@ fun TrainingsScreen(modifier: Modifier = Modifier) {
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp)
         ) {
-            items(trainings.value) { training ->
+            items(userTrainings) { training ->
                 TrainingListItem(
                     training = training,
                     onClick = {
@@ -73,28 +81,6 @@ fun TrainingsScreen(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.size(16.dp))
             }
         }
-    }
-
-    if (showTrainingForm) {
-        TrainingFormDialog(
-            training = selectedTraining,
-            onDismiss = { showTrainingForm = false },
-            onSave = { updatedTraining ->
-                val currentTrainings = trainings.value.toMutableList()
-                if (selectedTraining == null) {
-                    // Add new training
-                    currentTrainings.add(updatedTraining)
-                } else {
-                    // Update existing training
-                    val index = currentTrainings.indexOfFirst { it.name == selectedTraining?.name } // Assumes names are unique for simplicity
-                    if (index != -1) {
-                        currentTrainings[index] = updatedTraining
-                    }
-                }
-                trainings.value = currentTrainings
-                showTrainingForm = false
-            }
-        )
     }
 }
 
@@ -125,7 +111,8 @@ fun TrainingListItem(training: Training, modifier: Modifier = Modifier, onClick:
             Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxHeight()) {
-            Text("${training.exercises.size} exercícios")
+            val exercisesCount = training.exercises.size
+            Text(if (exercisesCount == 1) "1 exercício" else "$exercisesCount exercícios")
             Spacer(modifier = Modifier.weight(1f))
 
             val distinctCategoryNames = training.exercises

@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -59,6 +61,9 @@ dependencies {
     implementation(libs.google.play.services.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.android)
+    ksp("com.google.dagger:hilt-android-compiler:2.57.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

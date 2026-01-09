@@ -14,7 +14,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import br.com.giovanne.reps.data.Training
-import br.com.giovanne.reps.data.getTrainings
+import br.com.giovanne.reps.data.repositories.getTrainings
+import br.com.giovanne.reps.data.repositories.getUserTrainings
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -22,7 +23,7 @@ fun TrainingViewPager() {
     var trainings by remember { mutableStateOf<List<Training>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        trainings = getTrainings()
+        trainings = getUserTrainings()
     }
 
     val initialIndex = trainings.indexOfFirst { it.current }.coerceAtLeast(0)

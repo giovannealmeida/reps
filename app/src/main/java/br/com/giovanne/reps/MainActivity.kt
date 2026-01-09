@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -41,6 +42,7 @@ import br.com.giovanne.reps.ui.screens.login.LoginScreen
 import br.com.giovanne.reps.ui.screens.login.SignUpScreen
 import br.com.giovanne.reps.ui.screens.profile.ProfileScreen
 import br.com.giovanne.reps.ui.screens.trainings.TrainingsScreen
+import br.com.giovanne.reps.ui.screens.trainings.components.NewTrainingForm
 import com.example.compose.REPSTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -52,6 +54,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -59,29 +62,35 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
 
-    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)!!
-            val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
-            auth.signInWithCredential(credential)
-                .addOnCompleteListener(this) { task ->
-                    if (!task.isSuccessful) {
-                        // If sign in fails, display a message to the user.
-                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+    private val googleSignInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            try {
+                val account = task.getResult(ApiException::class.java)!!
+                val credential = GoogleAuthProvider.getCredential(account.idToken!!, null)
+                auth.signInWithCredential(credential)
+                    .addOnCompleteListener(this) { task ->
+                        if (!task.isSuccessful) {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(
+                                baseContext,
+                                "Authentication failed.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        // Success is handled by the auth state listener
                     }
-                    // Success is handled by the auth state listener
-                }
-        } catch (e: ApiException) {
-            // Google Sign In failed, update UI appropriately
-            Toast.makeText(baseContext, "Google sign in failed", Toast.LENGTH_SHORT).show()
+            } catch (e: ApiException) {
+                // Google Sign In failed, update UI appropriately
+                Toast.makeText(baseContext, "Google sign in failed", Toast.LENGTH_SHORT).show()
+            }
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -106,7 +115,10 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(user) {
                     val targetRoute = if (user != null) "main" else "login"
-                    if (navController.currentBackStackEntry?.destination?.route?.startsWith(targetRoute) == false) {
+                    if (navController.currentBackStackEntry?.destination?.route?.startsWith(
+                            targetRoute
+                        ) == false
+                    ) {
                         navController.navigate(targetRoute) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
@@ -119,7 +131,11 @@ class MainActivity : ComponentActivity() {
                             onLoginWithEmail = { email, password ->
                                 auth.signInWithEmailAndPassword(email, password)
                                     .addOnFailureListener {
-                                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            baseContext,
+                                            "Authentication failed.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             },
                             onLoginWithGoogle = {
@@ -129,7 +145,11 @@ class MainActivity : ComponentActivity() {
                             onLoginAnonymously = {
                                 auth.signInAnonymously()
                                     .addOnFailureListener {
-                                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            baseContext,
+                                            "Authentication failed.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             },
                             onNavigateToSignUp = {
@@ -139,7 +159,7 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("signup") {
                         SignUpScreen(
-                           onSignUp = { email, password, fullName ->
+                            onSignUp = { email, password, fullName ->
                                 auth.createUserWithEmailAndPassword(email, password)
                                     .addOnSuccessListener { authResult ->
                                         val firebaseUser = authResult.user
@@ -151,22 +171,34 @@ class MainActivity : ComponentActivity() {
                                             firestore.collection("users").document(it.uid)
                                                 .set(userData)
                                                 .addOnFailureListener { e ->
-                                                    Toast.makeText(baseContext, "Failed to save user data.", Toast.LENGTH_SHORT).show()
+                                                    Toast.makeText(
+                                                        baseContext,
+                                                        "Failed to save user data.",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
                                                 }
                                         }
                                     }
                                     .addOnFailureListener { e ->
-                                        Toast.makeText(baseContext, "Sign up failed: ${e.message}", Toast.LENGTH_LONG).show()
+                                        Toast.makeText(
+                                            baseContext,
+                                            "Sign up failed: ${e.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
                                     }
                             }
                         )
                     }
+                    composable("new_training") {
+                        NewTrainingForm( onBack = { navController.popBackStack() })
+                    }
                     composable("main") {
-                        REPSApp(onLogout = {
-                            auth.signOut()
-                            googleSignInClient.signOut()
-                            // Navigation is handled by the auth state listener
-                        })
+                        REPSApp(
+                            navController = navController,
+                            onLogout = {
+                                auth.signOut()
+                                googleSignInClient.signOut()
+                            })
                     }
                 }
             }
@@ -184,7 +216,7 @@ fun FirebaseAuth.authStateChanges(): Flow<FirebaseUser?> = callbackFlow {
 
 
 @Composable
-fun REPSApp(onLogout: () -> Unit) {
+fun REPSApp(navController: NavHostController, onLogout: () -> Unit) {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
 
     NavigationSuiteScaffold(
@@ -207,7 +239,12 @@ fun REPSApp(onLogout: () -> Unit) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             when (currentDestination) {
                 AppDestinations.HOME -> HomeScreen(modifier = Modifier.padding(innerPadding))
-                AppDestinations.FAVORITES -> TrainingsScreen(modifier = Modifier.padding(innerPadding))
+                AppDestinations.TRAINING -> TrainingsScreen(
+                    modifier = Modifier.padding(innerPadding),
+                    onNewTraining = {
+                        navController.navigate("new_training")
+                    })
+
                 AppDestinations.HISTORY -> HistoryScreen(modifier = Modifier.padding(innerPadding))
                 AppDestinations.PROFILE -> ProfileScreen(
                     modifier = Modifier.padding(innerPadding),
@@ -223,7 +260,7 @@ enum class AppDestinations(
     val icon: ImageVector,
 ) {
     HOME(R.string.destination_home, Icons.Default.Home),
-    FAVORITES(R.string.destination_training, Icons.Default.Favorite),
+    TRAINING(R.string.destination_training, Icons.Default.Favorite),
     HISTORY(R.string.destination_history, Icons.Default.Favorite),
     PROFILE(R.string.destination_profile, Icons.Default.AccountBox),
 }
