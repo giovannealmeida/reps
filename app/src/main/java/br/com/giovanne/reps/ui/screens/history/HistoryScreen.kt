@@ -15,7 +15,7 @@ fun HistoryScreen (modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxSize(), contentAlignment = Alignment.Center
     ) {
-        Text("Profile Screen") // Placeholder
+        Text("History Screen") // Placeholder
     }
 }
 

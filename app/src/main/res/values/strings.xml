@@ -3,4 +3,6 @@
     <string name="destination_home">Home</string>
     <string name="destination_training">Treinos</string>
     <string name="destination_history">Histórico</string>
+    <string name="destination_profile">Perfil</string>
+<!--    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>-->
 </resources>
