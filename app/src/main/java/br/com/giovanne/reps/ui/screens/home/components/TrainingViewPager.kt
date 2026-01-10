@@ -7,30 +7,30 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import br.com.giovanne.reps.data.Training
-import br.com.giovanne.reps.data.repositories.getTrainings
-import br.com.giovanne.reps.data.repositories.getUserTrainings
+import androidx.hilt.navigation.compose.hiltViewModel
+import br.com.giovanne.reps.ui.screens.home.HomeScreenViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TrainingViewPager() {
-    var trainings by remember { mutableStateOf<List<Training>>(emptyList()) }
+fun TrainingViewPager(
+    viewModel: HomeScreenViewModel = hiltViewModel()
+) {
+    val trainings by viewModel.trainings.collectAsState()
 
-    LaunchedEffect(Unit) {
-        trainings = getUserTrainings()
-    }
-
-    val initialIndex = trainings.indexOfFirst { it.current }.coerceAtLeast(0)
     val pagerState = rememberPagerState(
-        initialPage = initialIndex + 1,
+        initialPage = remember(trainings) { trainings.indexOfFirst { it.current }.coerceAtLeast(0) },
         pageCount = { trainings.size }
     )
+
+    LaunchedEffect(Unit) {
+        viewModel.reloadUserTrainings()
+    }
+
     HorizontalPager(
         state = pagerState,
         contentPadding = PaddingValues(horizontal = 32.dp)

@@ -14,14 +14,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,27 +44,68 @@ import br.com.giovanne.reps.data.Exercise
 import br.com.giovanne.reps.data.Training
 import br.com.giovanne.reps.ui.components.TrainingSquare
 import br.com.giovanne.reps.ui.screens.trainings.NewTrainingViewModel
+import br.com.giovanne.reps.ui.screens.trainings.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewTrainingForm(
-    training: Training? = null, onBack: () -> Unit
+    training: Training? = null,
+    viewModel: NewTrainingViewModel = hiltViewModel(),
+    onBack: () -> Unit
 ) {
-    val viewModel: NewTrainingViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     var showTrainingSelector by remember { mutableStateOf(false) }
     var showAddExercise by remember { mutableStateOf(false) }
     var selectedTraining by remember { mutableStateOf(training) }
+    val title by remember { mutableStateOf(if (selectedTraining == null) "Novo treino" else "Editar treino") }
     val exercises by viewModel.exercises.collectAsState()
+    val selectedExercises = remember {
+        mutableStateListOf(*(training?.exercises?.toTypedArray() ?: emptyArray()))
+    }
 
-    Scaffold(topBar = {
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is UiState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetUiState()
+            }
+
+            is UiState.Success -> {
+                onBack()
+            }
+
+            else -> Unit
+        }
+    }
+
+    Scaffold(
+        topBar = {
         TopAppBar(title = {
-            Text(if (selectedTraining == null) "Novo treino" else "Editar treino")
+            Text(title)
         }, navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
+            }
+        }, actions = {
+            TextButton(
+                onClick = {
+                    viewModel.saveTraining(
+                        selectedTraining,
+                        selectedExercises.toList()
+                    )
+                },
+                enabled = uiState !is UiState.Saving
+            ) {
+                if (uiState is UiState.Saving) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                } else {
+                    Text("SALVAR", color = MaterialTheme.colorScheme.primary)
+                }
             }
         })
     }, floatingActionButton = {
@@ -69,7 +114,8 @@ fun NewTrainingForm(
         }) {
             Icon(Icons.Default.Add, contentDescription = "Adicionar Exercício")
         }
-    }) { innerPadding ->
+    },
+        snackbarHost = { SnackbarHost(snackbarHostState) }) { innerPadding ->
         Surface(
             modifier = Modifier
                 .fillMaxSize()
@@ -84,10 +130,7 @@ fun NewTrainingForm(
                         },
                     contentAlignment = Alignment.BottomEnd
                 ) {
-                    TrainingSquare(
-                        name = selectedTraining?.name ?: "A",
-                        color = selectedTraining?.color ?: 0xFFFFB5A7
-                    )
+                    TrainingSquare(training = selectedTraining)
                     Icon(
                         modifier = Modifier.padding(8.dp),
                         imageVector = Icons.Default.Edit,
@@ -95,12 +138,12 @@ fun NewTrainingForm(
                     )
                 }
                 Spacer(modifier = Modifier.size(128.dp))
-                if (training?.exercises?.isNotEmpty() == true) {
-                    training.exercises.forEach {
+                if (selectedExercises.isEmpty()) {
+                    Text("Adicione exercícios")
+                } else {
+                    selectedExercises.forEach {
                         ExerciseListItem(it)
                     }
-                } else {
-                    Text("Adicione exercícios")
                 }
             }
         }
@@ -114,13 +157,10 @@ fun NewTrainingForm(
     }
 
     if (showAddExercise) {
-        LaunchedEffect(Unit) {
-            viewModel.loadExercises()
-        }
         NewExerciseBottomSheet(exercises = exercises, onDismiss = {
             showAddExercise = false
         }) { exercise ->
-            //Todo: update list
+            selectedExercises.add(exercise)
             showAddExercise = false
         }
     }
@@ -184,5 +224,5 @@ fun NewTrainingFormPreview() {
             listOf(630000L, 720000L, 810000L),
             exercisesA,
             true
-        ), onBack = {})
+        ), onBack = { })
 }

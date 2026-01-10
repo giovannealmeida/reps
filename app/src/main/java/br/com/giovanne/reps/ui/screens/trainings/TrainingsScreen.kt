@@ -24,34 +24,32 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.giovanne.reps.data.Training
-import br.com.giovanne.reps.data.repositories.addTraining
-import br.com.giovanne.reps.data.repositories.getTrainings
-import br.com.giovanne.reps.data.repositories.getUserTrainings
 import com.example.compose.REPSTheme
-import kotlinx.coroutines.launch
 
 @Composable
-fun TrainingsScreen(modifier: Modifier = Modifier, onNewTraining: () -> Unit = {}) {
+fun TrainingsScreen(
+    modifier: Modifier = Modifier, 
+    onNewTraining: () -> Unit = {},
+    viewModel: TrainingsViewModel = hiltViewModel()
+) {
     var showTrainingForm by remember { mutableStateOf(false) }
     var selectedTraining by remember { mutableStateOf<Training?>(null) }
-    var userTrainings by remember { mutableStateOf<List<Training>>(emptyList()) }
-    var predefinedTrainings by remember { mutableStateOf<List<Training>>(emptyList()) }
-    val scope = rememberCoroutineScope()
+    val userTrainings by viewModel.userTrainings.collectAsState()
 
     LaunchedEffect(Unit) {
-        userTrainings = getUserTrainings()
-        predefinedTrainings = getTrainings()
+        viewModel.reloadUserTrainings()
     }
 
     Scaffold(
@@ -127,10 +125,6 @@ fun TrainingListItem(training: Training, modifier: Modifier = Modifier, onClick:
         }
     }
 }
-
-
-
-
 
 @Preview(showBackground = true)
 @Composable
