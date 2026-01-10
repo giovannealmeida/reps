@@ -118,7 +118,7 @@ fun TrainingListItem(training: Training, modifier: Modifier = Modifier, onClick:
             val distinctCategoryNames = training.exercises
                 .flatMap { it.categories }
                 .distinct()
-                .joinToString(" - ") { it.name }
+                .joinToString(" - ") { it }
 
             Text(
                 text = distinctCategoryNames,

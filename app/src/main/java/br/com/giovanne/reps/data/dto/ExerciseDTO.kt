@@ -8,5 +8,5 @@ data class ExerciseDTO(
     val repetitions: Int = 0,
     val load: Float = 0f,
     val note: String = "",
-    val categories: List<DocumentReference> = emptyList()
+    val categories: List<String> = emptyList()
 )

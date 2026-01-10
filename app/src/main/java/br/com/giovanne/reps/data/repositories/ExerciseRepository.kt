@@ -1,7 +1,6 @@
 package br.com.giovanne.reps.data.repositories
 
 import br.com.giovanne.reps.data.Exercise
-import br.com.giovanne.reps.data.ExerciseCategory
 import br.com.giovanne.reps.data.dto.ExerciseDTO
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -16,10 +15,9 @@ class ExerciseRepository @Inject constructor() {
                 .map { dto ->
                     Exercise(
                         name = dto.name,
-                        categories = dto.categories.map { categoryRef ->
-                            categoryRef.get().await().toObject(ExerciseCategory::class.java)
-                                ?: ExerciseCategory()
-                        },
+                        repetitions = dto.repetitions,
+                        series = dto.series,
+                        categories = dto.categories
                     )
                 }
         } catch (e: Exception) {

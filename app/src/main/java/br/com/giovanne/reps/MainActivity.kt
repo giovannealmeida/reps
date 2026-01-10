@@ -36,6 +36,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import br.com.giovanne.reps.data.Exercise
 import br.com.giovanne.reps.ui.screens.history.HistoryScreen
 import br.com.giovanne.reps.ui.screens.home.HomeScreen
 import br.com.giovanne.reps.ui.screens.login.LoginScreen
@@ -190,7 +191,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("new_training") {
-                        NewTrainingForm( onBack = { navController.popBackStack() })
+                        NewTrainingForm(onBack = { navController.popBackStack() })
                     }
                     composable("main") {
                         REPSApp(
@@ -205,6 +206,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 fun FirebaseAuth.authStateChanges(): Flow<FirebaseUser?> = callbackFlow {
     val authStateListener = FirebaseAuth.AuthStateListener { auth ->

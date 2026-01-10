@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.giovanne.reps.data.Exercise
 import br.com.giovanne.reps.data.Training
-import br.com.giovanne.reps.data.userTrainingsMock
 import br.com.giovanne.reps.ui.components.TrainingSquare
 import br.com.giovanne.reps.ui.screens.trainings.NewTrainingViewModel
 
@@ -64,7 +63,7 @@ fun NewTrainingForm(
                 )
             }
         })
-    }, floatingActionButton = { 
+    }, floatingActionButton = {
         FloatingActionButton(onClick = {
             showAddExercise = true
         }) {
@@ -143,5 +142,47 @@ fun ExerciseListItem(exercise: Exercise) {
 @Preview
 @Composable
 fun NewTrainingFormPreview() {
-    NewTrainingForm(training = userTrainingsMock()[0], onBack = {})
+    val exercisesA = listOf(
+        Exercise(
+            name = "Supino Reto",
+            series = 4,
+            repetitions = 10,
+            load = 80.0f,
+            note = "Aumentar a carga na próxima semana.",
+            categories = listOf("Peito", "Ombros", "Triceps")
+        ),
+        Exercise(
+            name = "Crucifixo Inclinado",
+            series = 3,
+            repetitions = 12,
+            load = 30.0f,
+            note = "Focar na contração do peitoral.",
+            categories = listOf("tPeito")
+        ),
+        Exercise(
+            name = "Desenvolvimento com Halteres",
+            series = 4,
+            repetitions = 8,
+            load = 20.0f,
+            note = "",
+            categories = listOf("Ombros")
+        ),
+        Exercise(
+            name = "Elevação Lateral",
+            series = 3,
+            repetitions = 15,
+            load = 10.0f,
+            note = "Movimento controlado.",
+            categories = listOf("Ombros")
+        )
+    )
+
+    NewTrainingForm(
+        training = Training(
+            "A",
+            0xFF448AFF,
+            listOf(630000L, 720000L, 810000L),
+            exercisesA,
+            true
+        ), onBack = {})
 }

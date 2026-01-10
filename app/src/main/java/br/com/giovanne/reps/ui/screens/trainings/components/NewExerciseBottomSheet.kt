@@ -13,6 +13,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -72,10 +73,10 @@ fun AddExerciseSheetContent(
         ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
             TextField(
                 modifier = Modifier
-                    .menuAnchor()
+                    .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
                     .fillMaxWidth(),
                 readOnly = true,
-                value = selectedExercise?.name ?: "",
+                value = selectedExercise.name,
                 onValueChange = {},
                 label = { Text("Exercício") },
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -97,7 +98,7 @@ fun AddExerciseSheetContent(
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             TextField(
-                value = series,
+                value = selectedExercise.series.toString(),
                 onValueChange = { series = it },
                 label = { Text("Séries") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -105,7 +106,7 @@ fun AddExerciseSheetContent(
             )
 
             TextField(
-                value = repetitions,
+                value = selectedExercise.repetitions.toString(),
                 onValueChange = { repetitions = it },
                 label = { Text("Reps") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
