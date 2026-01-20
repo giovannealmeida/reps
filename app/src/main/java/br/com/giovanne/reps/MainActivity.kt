@@ -36,14 +36,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.giovanne.reps.data.Exercise
 import br.com.giovanne.reps.ui.screens.history.HistoryScreen
 import br.com.giovanne.reps.ui.screens.home.HomeScreen
 import br.com.giovanne.reps.ui.screens.login.LoginScreen
 import br.com.giovanne.reps.ui.screens.login.SignUpScreen
 import br.com.giovanne.reps.ui.screens.profile.ProfileScreen
-import br.com.giovanne.reps.ui.screens.trainings.TrainingsScreen
-import br.com.giovanne.reps.ui.screens.trainings.components.NewTrainingForm
+import br.com.giovanne.reps.ui.screens.workouts.WorkoutsScreen
+import br.com.giovanne.reps.ui.screens.workouts.components.NewWorkoutForm
 import com.example.compose.REPSTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -190,8 +189,8 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }
-                    composable("new_training") {
-                        NewTrainingForm(onBack = { navController.popBackStack() })
+                    composable("new_workout") {
+                        NewWorkoutForm(onBack = { navController.popBackStack() })
                     }
                     composable("main") {
                         REPSApp(
@@ -241,10 +240,10 @@ fun REPSApp(navController: NavHostController, onLogout: () -> Unit) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             when (currentDestination) {
                 AppDestinations.HOME -> HomeScreen(modifier = Modifier.padding(innerPadding))
-                AppDestinations.TRAINING -> TrainingsScreen(
+                AppDestinations.WORKOUT -> WorkoutsScreen(
                     modifier = Modifier.padding(innerPadding),
-                    onNewTraining = {
-                        navController.navigate("new_training")
+                    onNewWorkout = {
+                        navController.navigate("new_workout")
                     })
 
                 AppDestinations.HISTORY -> HistoryScreen(modifier = Modifier.padding(innerPadding))
@@ -262,7 +261,7 @@ enum class AppDestinations(
     val icon: ImageVector,
 ) {
     HOME(R.string.destination_home, Icons.Default.Home),
-    TRAINING(R.string.destination_training, Icons.Default.Favorite),
+    WORKOUT(R.string.destination_workout, Icons.Default.Favorite),
     HISTORY(R.string.destination_history, Icons.Default.Favorite),
     PROFILE(R.string.destination_profile, Icons.Default.AccountBox),
 }

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.giovanne.reps.Date
-import br.com.giovanne.reps.ui.screens.home.components.TrainingViewPager
+import br.com.giovanne.reps.ui.screens.home.components.WorkoutViewPager
 import com.example.compose.REPSTheme
 
 @Composable
@@ -23,7 +23,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     ) {
         Date()
         Text("Treino de hoje")
-        TrainingViewPager()
+        WorkoutViewPager()
         Spacer(modifier = Modifier.size(16.dp))
         Button(onClick = {}) {
             Text("Iniciar")

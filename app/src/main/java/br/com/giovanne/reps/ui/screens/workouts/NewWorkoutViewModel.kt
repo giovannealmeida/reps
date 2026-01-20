@@ -1,11 +1,11 @@
-package br.com.giovanne.reps.ui.screens.trainings
+package br.com.giovanne.reps.ui.screens.workouts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.giovanne.reps.data.Exercise
-import br.com.giovanne.reps.data.Training
+import br.com.giovanne.reps.data.Workout
 import br.com.giovanne.reps.data.repositories.ExerciseRepository
-import br.com.giovanne.reps.data.repositories.TrainingsRepository
+import br.com.giovanne.reps.data.repositories.WorkoutsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,9 +21,9 @@ sealed class UiState {
 }
 
 @HiltViewModel
-class NewTrainingViewModel @Inject constructor(
+class NewWorkoutViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository,
-    private val trainingsRepository: TrainingsRepository
+    private val workoutsRepository: WorkoutsRepository
 ) : ViewModel() {
 
     private val _exercises = MutableStateFlow<List<Exercise>>(emptyList())
@@ -46,9 +46,9 @@ class NewTrainingViewModel @Inject constructor(
         }
     }
 
-    fun saveTraining(training: Training?, exercises: List<Exercise>) {
-        if (training == null) {
-            _uiState.value = UiState.Error("Escolha um treino")
+    fun saveWorkout(workout: Workout?, exercises: List<Exercise>) {
+        if (workout == null) {
+            _uiState.value = UiState.Error("Escolha um workout")
             return
         }
 
@@ -60,10 +60,10 @@ class NewTrainingViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = UiState.Saving
-                trainingsRepository.addTraining(training.copy(exercises = exercises))
+                workoutsRepository.addWorkout(workout.copy(exercises = exercises))
                 _uiState.value = UiState.Success
             } catch (e: Exception) {
-                _uiState.value = UiState.Error("Failed to save training")
+                _uiState.value = UiState.Error("Failed to save workout")
             }
         }
     }

@@ -1,4 +1,4 @@
-package br.com.giovanne.reps.ui.screens.home
+package br.com.giovanne.reps.ui.screens.workouts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,24 +12,31 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor(
+class WorkoutsViewModel @Inject constructor(
     private val workoutsRepository: WorkoutsRepository
 ) : ViewModel() {
 
-    private val _workouts = MutableStateFlow<List<Workout>>(emptyList())
-    val workouts: StateFlow<List<Workout>> = _workouts.asStateFlow()
+    private val _userWorkouts = MutableStateFlow<List<Workout>>(emptyList())
+    val userWorkouts: StateFlow<List<Workout>> = _userWorkouts.asStateFlow()
 
     init {
         loadUserWorkouts()
     }
 
-    private fun loadUserWorkouts() {
+    fun reloadUserWorkouts() {
+        loadUserWorkouts()
+    }
+
+    fun deleteWorkout(workoutId: String) {
         viewModelScope.launch {
-            _workouts.value = workoutsRepository.getUserWorkouts()
+            workoutsRepository.deleteWorkout(workoutId)
+            loadUserWorkouts()
         }
     }
 
-    fun reloadUserWorkouts() {
-        loadUserWorkouts()
+    private fun loadUserWorkouts() {
+        viewModelScope.launch {
+            _userWorkouts.value = workoutsRepository.getUserWorkouts()
+        }
     }
 }

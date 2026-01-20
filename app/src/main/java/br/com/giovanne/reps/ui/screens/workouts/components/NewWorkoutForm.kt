@@ -1,4 +1,4 @@
-package br.com.giovanne.reps.ui.screens.trainings.components
+package br.com.giovanne.reps.ui.screens.workouts.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,28 +41,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.giovanne.reps.data.Exercise
-import br.com.giovanne.reps.data.Training
-import br.com.giovanne.reps.ui.components.TrainingSquare
-import br.com.giovanne.reps.ui.screens.trainings.NewTrainingViewModel
-import br.com.giovanne.reps.ui.screens.trainings.UiState
+import br.com.giovanne.reps.data.Workout
+import br.com.giovanne.reps.ui.components.WorkoutSquare
+import br.com.giovanne.reps.ui.screens.workouts.NewWorkoutViewModel
+import br.com.giovanne.reps.ui.screens.workouts.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewTrainingForm(
-    training: Training? = null,
-    viewModel: NewTrainingViewModel = hiltViewModel(),
+fun NewWorkoutForm(
+    workout: Workout? = null,
+    viewModel: NewWorkoutViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var showTrainingSelector by remember { mutableStateOf(false) }
+    var showWorkoutSelector by remember { mutableStateOf(false) }
     var showAddExercise by remember { mutableStateOf(false) }
-    var selectedTraining by remember { mutableStateOf(training) }
-    val title by remember { mutableStateOf(if (selectedTraining == null) "Novo treino" else "Editar treino") }
+    var selectedWorkout by remember { mutableStateOf(workout) }
+    val title by remember { mutableStateOf(if (selectedWorkout == null) "Novo treino" else "Editar treino") }
     val exercises by viewModel.exercises.collectAsState()
     val selectedExercises = remember {
-        mutableStateListOf(*(training?.exercises?.toTypedArray() ?: emptyArray()))
+        mutableStateListOf(*(workout?.exercises?.toTypedArray() ?: emptyArray()))
     }
 
     LaunchedEffect(uiState) {
@@ -94,8 +94,8 @@ fun NewTrainingForm(
         }, actions = {
             TextButton(
                 onClick = {
-                    viewModel.saveTraining(
-                        selectedTraining,
+                    viewModel.saveWorkout(
+                        selectedWorkout,
                         selectedExercises.toList()
                     )
                 },
@@ -126,15 +126,15 @@ fun NewTrainingForm(
                     modifier = Modifier
                         .size(120.dp)
                         .clickable {
-                            showTrainingSelector = true
+                            showWorkoutSelector = true
                         },
                     contentAlignment = Alignment.BottomEnd
                 ) {
-                    TrainingSquare(training = selectedTraining)
+                    WorkoutSquare(workout = selectedWorkout)
                     Icon(
                         modifier = Modifier.padding(8.dp),
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit training"
+                        contentDescription = "Edit workout"
                     )
                 }
                 Spacer(modifier = Modifier.size(128.dp))
@@ -149,10 +149,10 @@ fun NewTrainingForm(
         }
     }
 
-    if (showTrainingSelector) {
-        TrainingFormDialog(onDismiss = { showTrainingSelector = false }) { name, color ->
-            selectedTraining = Training(name = name, color = color)
-            showTrainingSelector = false
+    if (showWorkoutSelector) {
+        WorkoutFormDialog(onDismiss = { showWorkoutSelector = false }) { name, color ->
+            selectedWorkout = Workout(name = name, color = color)
+            showWorkoutSelector = false
         }
     }
 
@@ -181,7 +181,7 @@ fun ExerciseListItem(exercise: Exercise) {
 
 @Preview
 @Composable
-fun NewTrainingFormPreview() {
+fun NewWorkoutFormPreview() {
     val exercisesA = listOf(
         Exercise(
             name = "Supino Reto",
@@ -217,8 +217,8 @@ fun NewTrainingFormPreview() {
         )
     )
 
-    NewTrainingForm(
-        training = Training(
+    NewWorkoutForm(
+        workout = Workout(
             "1",
             "A",
             0xFF448AFF,

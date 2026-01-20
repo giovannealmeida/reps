@@ -1,4 +1,4 @@
-package br.com.giovanne.reps.ui.screens.trainings.components
+package br.com.giovanne.reps.ui.screens.workouts.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
