@@ -150,8 +150,8 @@ fun NewTrainingForm(
     }
 
     if (showTrainingSelector) {
-        TrainingSelectDialog(onDismiss = { showTrainingSelector = false }) { training ->
-            selectedTraining = training
+        TrainingFormDialog(onDismiss = { showTrainingSelector = false }) { name, color ->
+            selectedTraining = Training(name = name, color = color)
             showTrainingSelector = false
         }
     }
