@@ -60,14 +60,19 @@ class NewWorkoutViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.value = UiState.Saving
-                workoutsRepository.addWorkout(workout.copy(exercises = exercises))
+                workout.apply {
+                    this.exercises = exercises
+                    this.order = workoutsRepository.getLastWorkoutOrder() + 1
+                    this.current = this.order == 0
+                }
+                workoutsRepository.addWorkout(workout)
                 _uiState.value = UiState.Success
             } catch (e: Exception) {
                 _uiState.value = UiState.Error("Failed to save workout")
             }
         }
     }
-    
+
     fun resetUiState() {
         _uiState.value = UiState.Idle
     }

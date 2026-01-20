@@ -160,6 +160,7 @@ fun NewWorkoutForm(
         NewExerciseBottomSheet(exercises = exercises, onDismiss = {
             showAddExercise = false
         }) { exercise ->
+            exercise.order = selectedExercises.size
             selectedExercises.add(exercise)
             showAddExercise = false
         }

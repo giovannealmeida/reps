@@ -3,14 +3,15 @@ package br.com.giovanne.reps.data
 import com.google.firebase.firestore.Exclude
 
 data class Exercise(
-    val name: String = "",
-    val series: Int = 0,
-    val repetitions: Int = 0,
-    val categories: List<String> = emptyList(),
+    var name: String = "",
+    var series: Int = 0,
+    var repetitions: Int = 0,
+    var categories: List<String> = emptyList(),
+    var order: Int = 0,
     @get:Exclude
-    val load: Float = 0f,
+    var load: Float = 0f,
     @get:Exclude
-    val note: String = "",
+    var note: String = "",
 ) {
     @Exclude
     fun getFormattedReps(): String {

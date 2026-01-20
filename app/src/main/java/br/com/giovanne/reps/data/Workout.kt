@@ -3,11 +3,11 @@ package br.com.giovanne.reps.data
 import com.google.firebase.firestore.DocumentId
 
 data class Workout(
-    @DocumentId val id: String = "",
-    val name: String = "",
-    val color: Long = 0, // Default color
-    val times: List<Long> = emptyList(),
-    val exercises: List<Exercise> = emptyList(),
-    val current: Boolean = false,
-    val order: Int = 0
+    @DocumentId var id: String = "",
+    var name: String = "",
+    var color: Long = 0, // Default color
+    var times: List<Long> = emptyList(),
+    var exercises: List<Exercise> = emptyList(),
+    var current: Boolean = false,
+    var order: Int = 0
 )
