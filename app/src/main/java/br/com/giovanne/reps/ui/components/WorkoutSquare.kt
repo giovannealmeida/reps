@@ -17,20 +17,20 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import br.com.giovanne.reps.data.Training
+import br.com.giovanne.reps.data.Workout
 
 @Composable
-fun TrainingSquare(modifier: Modifier = Modifier, training: Training? = null, size: Int = 120) {
+fun WorkoutSquare(modifier: Modifier = Modifier, workout: Workout? = null, size: Int = 120) {
 
-    val name = training?.name ?: "?"
-    val color = training?.color ?: 0x00000000
+    val name = workout?.name ?: "?"
+    val color = workout?.color ?: 0x00000000
 
     Box(
         modifier = modifier
             .size(size.dp)
             .background(Color(color), MaterialTheme.shapes.medium)
             .then(
-                if (training == null) {
+                if (workout == null) {
                     Modifier
                         .padding(4.dp)
                         .drawBehind {
@@ -60,6 +60,6 @@ fun TrainingSquare(modifier: Modifier = Modifier, training: Training? = null, si
 
 @Preview(showBackground = true)
 @Composable
-fun TrainingSquarePreview() {
-    TrainingSquare()
+fun WorkoutSquarePreview() {
+    WorkoutSquare()
 }
