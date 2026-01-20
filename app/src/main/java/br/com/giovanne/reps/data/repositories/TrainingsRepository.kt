@@ -14,6 +14,7 @@ class TrainingsRepository @Inject constructor() {
             db.collection("trainings").orderBy("name").get().await().toObjects(TrainingDTO::class.java)
                 .map { dto ->
                     Training(
+                        id = dto.id,
                         name = dto.name,
                         color = dto.color
 //                    exercises = firestoreTraining.exercises.map { exerciseRef ->
@@ -35,16 +36,7 @@ class TrainingsRepository @Inject constructor() {
                 .orderBy("order")
                 .get()
                 .await()
-                .toObjects(TrainingDTO::class.java)
-                .map { dto ->
-                    Training(
-                        name = dto.name,
-                        color = dto.color,
-                        times = dto.times,
-                        current = dto.current,
-                        order = dto.order
-                    )
-                }
+                .toObjects(Training::class.java)
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
@@ -57,6 +49,19 @@ class TrainingsRepository @Inject constructor() {
         try {
             db.collection("users").document(user.uid).collection("trainings")
                 .add(training)
+                .await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    suspend fun deleteTraining(trainingId: String) {
+        val user = FirebaseAuth.getInstance().currentUser ?: return
+        val db = FirebaseFirestore.getInstance()
+        try {
+            db.collection("users").document(user.uid).collection("trainings")
+                .document(trainingId)
+                .delete()
                 .await()
         } catch (e: Exception) {
             e.printStackTrace()

@@ -17,11 +17,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.giovanne.reps.data.Training
 import com.example.compose.REPSTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TrainingsScreen(
     modifier: Modifier = Modifier, 
@@ -67,15 +73,48 @@ fun TrainingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues),
             contentPadding = PaddingValues(16.dp)
-        ) {
-            items(userTrainings) { training ->
-                TrainingListItem(
-                    training = training,
-                    onClick = {
-                        selectedTraining = training
-                        showTrainingForm = true
+        ) { 
+            items(userTrainings, key = { it.id }) { training ->
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = {
+                        if (it == SwipeToDismissBoxValue.StartToEnd || it == SwipeToDismissBoxValue.EndToStart) {
+                            viewModel.deleteTraining(training.id)
+                            true
+                        } else {
+                            false
+                        }
                     }
                 )
+                SwipeToDismissBox(
+                    state = dismissState,
+                    backgroundContent = {
+                        val color = when (dismissState.targetValue) {
+                            SwipeToDismissBoxValue.StartToEnd, SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.errorContainer
+                            SwipeToDismissBoxValue.Settled -> Color.Transparent
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(color)
+                                .padding(horizontal = 20.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Deletar",
+                                tint = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                ) {
+                    TrainingListItem(
+                        training = training,
+                        onClick = {
+                            selectedTraining = training
+                            showTrainingForm = true
+                        }
+                    )
+                }
                 Spacer(modifier = Modifier.size(16.dp))
             }
         }

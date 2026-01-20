@@ -31,6 +31,13 @@ class TrainingsViewModel @Inject constructor(
         loadUserTrainings()
     }
 
+    fun deleteTraining(trainingId: String) {
+        viewModelScope.launch {
+            trainingsRepository.deleteTraining(trainingId)
+            loadUserTrainings()
+        }
+    }
+
     private fun loadUserTrainings() {
         viewModelScope.launch {
             _userTrainings.value = trainingsRepository.getUserTrainings()

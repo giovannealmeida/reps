@@ -219,6 +219,7 @@ fun NewTrainingFormPreview() {
 
     NewTrainingForm(
         training = Training(
+            "1",
             "A",
             0xFF448AFF,
             listOf(630000L, 720000L, 810000L),

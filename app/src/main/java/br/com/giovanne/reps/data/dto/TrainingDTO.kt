@@ -1,8 +1,9 @@
 package br.com.giovanne.reps.data.dto
 
-import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentId
 
 data class TrainingDTO(
+    @DocumentId val id: String = "",
     val name: String = "",
     val color: Long = 0,
     val times: List<Long> = emptyList(),

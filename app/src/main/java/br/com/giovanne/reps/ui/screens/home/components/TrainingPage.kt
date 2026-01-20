@@ -91,7 +91,7 @@ fun TrainingPage(training: Training, modifier: Modifier = Modifier) {
 @Composable
 fun TrainingPagePreview() {
     TrainingPage(
-        training = Training("C", 0xFFFF5252, listOf(), listOf(), true),
+        training = Training("1","C", 0xFFFF5252, listOf(), listOf(), true),
         modifier = Modifier.fillMaxWidth()
     )
 }
